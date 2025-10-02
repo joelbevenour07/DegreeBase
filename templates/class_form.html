@@ -1,0 +1,105 @@
+{% extends "primaryLayout.html" %}
+
+{% block title %} {{title}}  {% endblock title %}
+{% block header %} {{header}}  {% endblock header %}
+
+{% block content %}  
+<div style="padding-left: 50 px ">
+    <form action="" method="post" >
+        {{ form.csrf_token }}
+     
+      
+        <div>
+           {{form.CRN.label}}
+           <span class="error">{{ form.CRN.errors | join("|") }}</span>
+           <br />
+           {{form.CRN}}
+        </div>
+     
+        <div>
+           {{form.subject.label}}
+           <span class="error">{{ form.subject.errors | join("|") }}</span>
+           <br />
+           {{form.subject}}
+        </div>
+     
+        <div>
+         {{form.courseNum.label}}
+         <span class="error">{{ form.courseNum.errors | join("|") }}</span>
+         <br />
+         {{form.courseNum}}
+      </div>
+     
+      <div>
+         {{form.section.label}}
+         <span class="error">{{ form.section.errors | join("|") }}</span>
+         <br />
+         {{form.section}}
+      </div>
+     
+      <div>
+         {{form.credit_hours.label}}
+         <span class="error">{{ form.credit_hours.errors | join("|") }}</span>
+         <br />
+         {{form.credit_hours}}
+      </div>
+     
+      <div>
+         {{form.title.label}}
+         <span class="error">{{ form.title.errors | join("|") }}</span>
+         <br />
+         {{form.title}}
+      </div>
+     
+      <div>
+         {{form.instructor.label}}
+         <span class="error">{{ form.instructor.errors | join("|") }}</span>
+         <br />
+         {{form.instructor}}
+      </div>
+     
+      <div>
+         {{form.days.label}}
+         <span class="error">{{ form.days.errors | join("|") }}</span>
+         <br />
+         {{form.days}}
+      </div>
+     
+      <div>
+         {{form.start_time.label}}
+         <span class="error">{{ form.start_time.errors | join("|") }}</span>
+         <br />
+         {{form.start_time}}
+      </div>
+     
+      <div>
+         {{form.end_time.label}}
+         <span class="error">{{ form.end_time.errors | join("|") }}</span>
+         <br />
+         {{form.end_time}}
+      </div>
+     
+     
+      <div>
+         {{form.location.label}}
+         <span class="error">{{ form.location.errors | join("|") }}</span>
+         <br />
+         {{form.location}}
+      </div>
+     
+     
+      <div>
+         {{form.max_seats.label}}
+         <span class="error">{{ form.max_seats.errors | join("|") }}</span>
+         <br />
+         {{form.max_seats}}
+      </div>
+     
+        <!-- SUBMIT -->
+        <div>
+           {{form.submit()}}
+        </div>
+     </form>
+</div>   
+
+{% endblock content %}

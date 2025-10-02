@@ -1,0 +1,37 @@
+{% extends 'primaryLayout.html' %} {% block title %}Login{% endblock %} 
+{% block content %}
+<div class="container-fluid flex-grow-1 align-items-center justify-content-center d-flex">
+    <div class="card login-container ">
+        <form action="{{ url_for('login') }}" method="POST" class="card-body">
+            {{ form.hidden_tag() }}
+            <h4 class="card-title">
+                Login
+            </h4>
+            <hr>
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+            <div class="mb-3">
+                {{ form.email.label }} {{ form.email(class="form-control") }}
+                {% if form.email.errors %}
+                    <div class="alert alert-danger">{{ form.email.errors[0] }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label }} {{ form.password(class="form-control") }}
+                {% if form.password.errors %}
+                    <div class="alert alert-danger">{{ form.password.errors[0] }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <!-- <i>Forgot password? <a href="">Reset</a></i> -->
+            </div>
+            <div class="mb-3">
+                <i>Don't have an account? <a href="{{url_for('register')}}">Register</a></i>
+            </div>
+
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+</div>
+{% endblock %}

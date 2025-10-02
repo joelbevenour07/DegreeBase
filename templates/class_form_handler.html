@@ -1,0 +1,63 @@
+{% extends "primaryLayout.html" %}
+
+{% block title %} {{title}}  {% endblock title %}
+{% block header %} {{header}}  {% endblock header %}
+
+{% block content %} 
+
+   <p>
+      CRN: {{ result["CRN"] }} 
+   </p>
+
+   <p>
+      Subject : {{ result["subject"] }} 
+   </p>
+
+   <p>
+      Course Number: {{ result["courseNum"] }} 
+   </p>
+
+   <p>
+      Section : {{ result["section"] }} 
+   </p>
+
+   <p>
+    Credit Hours : {{ result["credit_hours"] }} 
+ </p>
+
+ <p>
+    Campus Code : D
+ </p>
+
+ <p>
+    P/T : 1
+ </p>
+
+ <p>
+    Title : {{ result["title"] }} 
+ </p>
+ 
+ <p>
+    Instructor : {{ result["instructor"] }} 
+ </p>
+
+ <p>
+    Days : {{ result["days"] }} 
+ </p>
+
+ <p>
+    Start Time : {{ result["start_time"] }} 
+ </p>
+
+ <p>
+    End Time : {{ result["end_time"] }} 
+ </p>
+
+ <p>
+    Location : {{ result["location"] }} 
+ </p>
+
+ <p>
+    Max Seats : {{ result["max_seats"] }} 
+ </p>
+{% endblock content %}

@@ -1,0 +1,379 @@
+{% extends 'primaryLayout.html' %} {% block title %}Dashboard{% endblock %}
+{% block header%}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+
+{% endblock%}
+{% block content %}
+<div class="container-fluid flex-column flex-grow-1 align-items-center justify-content-center d-flex">
+    <h1>Welcome {{ current_user.firstname }} {{ current_user.lastname }}</h1>
+    <p>
+        Dashboard
+    </p>
+    <style>
+        .outer-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .inner-box {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            border: 1px solid #ccc;
+            margin: 5px;
+            flex: 1 0 calc(50% - 20px);
+        }
+
+        .key {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            font-weight: bold;
+        }
+
+        .value {
+            padding: 10px;
+        }
+    </style>
+    
+    <div class="outer-box">
+        <h1><strong></strong></h1>
+        <div class="inner-box">
+            <div class="info-box">
+                <div class="key">Name</div>
+                <div class="value">{{current_user.firstname}} {{current_user.lastname}}</div>
+            </div>
+            <div class="info-box">
+                <div class="key">ID</div>
+                <div class="value">{{current_user.id}}</div>
+            </div>
+            <div class="info-box">
+                <div class="key">Degree</div>
+                <div class="value">B.S</div>
+            </div>
+            <div class="info-box">
+                <div class="key">Level</div>
+                <div class="value">{{current_user.year}}</div>
+            </div>
+            <div class="info-box">
+                <div class="key">Majors</div>
+                <div class="value">{{current_user.majors}}</div>
+            </div>
+            <div class="info-box">
+                <div class="key">Minor</div>
+                <div class="value">None</div>
+            </div>
+            <div class="info-box">
+                <div class="key">Student Status</div>
+                <div class="value">Full-time</div>
+            </div>
+            <div class="info-box">
+                <div class="key">Number of Credits Needed:</div>
+                <div class="value">{{current_user.credits_needed - current_user.credits_completed}}</div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="outer-box container">
+        <div id="flash-messages">
+
+        </div>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                    type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">All Classes</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="major-tab" data-bs-toggle="tab" data-bs-target="#major-tab-pane"
+                    type="button" role="tab" aria-controls="major-tab-pane" aria-selected="false">Available Required Classes-
+                    {{current_user.majors}}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
+                    type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">My Classes</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule-tab-pane"
+                    type="button" role="tab" aria-controls="schedule-tab-pane" aria-selected="false">My
+                    Schedule</button>
+            </li>
+            <li class="nav-item flex-grow-1"></li>
+            <li class="nav-item flex-grow-1"></li>
+            <li class="nav-item ml-auto" role="presentation">
+                <button class="btn btn-primary" onclick="printCalendar()">Print Calendar</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+
+             
+            
+            <div class="tab-pane fade pt-4 show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                tabindex="1">
+
+                <div class="container row inner-box w-100">
+                    {% for class in json_class_list %}
+                                <div class="col-md-6 col-12 p-2" id="course_{{class.course_id}}">
+                                    <div class="w-100 d-flex flex-column border">
+                                        <div class="d-flex justify-content-between p-2">
+                                            <div class="">
+                                                <h4 class="fs-4 fw-bold">{{class.title}}</h4>
+                                                <h5 class="fs-5">{{class.instructor}}</h5>
+                                                <h6 class="fs-6">Credit Hour: {{class.credit_hours}} Hr</h6>
+                                                <h6 class="fs-6">Section: {{class.section}} </h6>
+                                                <h6 class="fs-6">Maximum number of seats: {{class.max_seats}}</h6>
+                                            </div>
+                                            <div class="p-2">
+                                                <h4>#{{class.courseNum}}</h4>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between p-2">
+                                            <div class="d-flex flex-column">
+                                                <p class="m-0">
+                                                    Days: {{class.days}}
+                                                </p>
+                                                <p class="m-0">
+                                                    Time: {{class.start_time}} -
+                                                    {{class.end_time}}
+                                                    
+                                                </p>
+                                            </div>
+                                            <p>
+                                                Location: {{class.location}}
+                                            </p>
+                                        </div>
+
+                                        <div class="w-100 d-flex justify-content-end p-2">
+                                            <button class="btn btn-primary px-4"
+                                                onclick="enrollCourse('{{current_user.id}}','{{class.course_id}}','{{class.title}}','{{class.id}}')">Enroll</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        {% endfor %}
+
+                    <!-- <p>List of courses(maybe catagorize them by elective, minor, major...), fullfilled or not they will have
+                        some sort indication</p> -->
+                </div>
+            </div>
+
+            <div class="tab-pane fade pt-4" id="major-tab-pane" role="tabpanel" aria-labelledby="major-tab"
+                tabindex="2">
+                
+                
+                <div class="container row inner-box w-100">
+                    {% for class in major_required_list %}
+                                <div class="col-md-6 col-12 p-2" id="course_{{class.course_id}}">
+                                    <div class="w-100 d-flex flex-column border">
+                                        <div class="d-flex justify-content-between p-2">
+                                            <div class="">
+                                                <h4 class="fs-4 fw-bold">{{class.title}}</h4>
+                                                <h5 class="fs-5">{{class.instructor}}</h5>
+                                                <h6 class="fs-6">Credit Hour: {{class.credit_hours}} Hr</h6>
+                                                <h6 class="fs-6">Section: {{class.section}} </h6>
+                                                <h6 class="fs-6">Maximum number of seats: {{class.max_seats}}</h6>
+                                            </div>
+                                            <div class="p-2">
+                                                <h4>#{{class.courseNum}}</h4>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between p-2">
+                                            <div class="d-flex flex-column">
+                                                <p class="m-0">
+                                                    Days: {{class.days}}
+                                                </p>
+                                                <p class="m-0">
+                                                    Time: {{class.start_time}} -
+                                                    {{class.end_time}}
+                                                    
+                                                </p>
+                                            </div>
+                                            <p>
+                                                Location: {{class.location}}
+                                            </p>
+                                        </div>
+
+                                        <div class="w-100 d-flex justify-content-end p-2">
+                                            <button class="btn btn-primary px-4"
+                                                onclick="enrollCourse('{{current_user.id}}','{{class.course_id}}','{{class.title}}','{{class.id}}')">Enroll</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        {% endfor %}
+
+                    <!-- <p>List of courses(maybe catagorize them by elective, minor, major...), fullfilled or not they will have
+                        some sort indication</p> -->
+                </div>
+                
+
+            </div>
+
+            <div class="tab-pane fade pt-4" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                tabindex="3">
+
+                <div class="container row inner-box w-100">
+                    {% for my_class in current_classes %}
+
+                        <div class="col-md-6 col-12 p-2" id="my_class_{{my_class.course_id}}">
+                            <div class="w-100 d-flex flex-column border">
+                                <div class="d-flex justify-content-between p-2">
+                                    <div class="">
+                                        <h4 class="fs-4 fw-bold">{{my_class.title}}</h4>
+                                        <h5 class="fs-5">{{my_class.instructor}}</h5>
+                                        <h6 class="fs-6">Credit Hour: {{my_class.credit_hours}} Hr</h6>
+                                        <h6 class="fs-6">Section: {{my_class.section}}</h6>
+                                        <h6 class="fs-6">Maximum number of seats: {{my_class.num_seats}}</h6>
+                                        
+                                    </div>
+                                    <div class="p-2">
+                                        <h4>#{{my_class.course_id}}</h4>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between p-2">
+                                    <div class="d-flex flex-column">
+                                        <p class="m-0">
+                                            Days: {{my_class.days}}
+                                        </p>
+                                        <p class="m-0">
+                                            Time: {{my_class.start_time}} -
+                                            {{my_class.end_time}}
+                                        </p>
+                                    </div>
+                                    <p>
+                                        Location: {{my_class.location}}
+                                    </p>
+                                </div>
+
+                                <div class="w-100 d-flex justify-content-end p-2">
+                                    <!-- <button class="btn btn-primary px-4">Enroll</button> -->
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="tab-pane fade pt-4" id="schedule-tab-pane" role="tabpanel" aria-labelledby="schedule-tab"
+                tabindex="4">
+                
+                
+                <div id='calendar' class=""></div>
+                
+
+            </div>
+            
+          
+            
+
+        </div>
+    </div>
+    <script>
+        function printCalendar() {
+            var calendarContent = document.getElementById('schedule-tab-pane').innerHTML;
+            var originalContent = document.body.innerHTML;
+    
+            document.body.innerHTML = calendarContent;
+    
+            window.print();
+    
+            document.body.innerHTML = originalContent;
+        }
+    </script>
+    <script>
+
+
+        var calendarEl = document.getElementById('calendar');
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                contentHeight: "auto",
+                nowIndicator: true,
+                
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: [
+                    ],
+                    slotMinTime: "08:00:00",
+                    slotMaxTime: "20:00:00"
+                });
+                
+            
+                var class_details_before = '{{ class_details|safe }}';
+                var class_details = JSON.parse(class_details_before);
+                console.log(class_details)
+
+                class_details.forEach(event => {
+                    calendar.addEvent({
+                        title: event.Title,
+                        daysOfWeek: convertDaysToNumbers(event.days),
+                        startTime: event.start_time,
+                        endTime: event.end_time,
+                        allDay: false
+                    });
+
+                });
+            calendar.render();
+
+
+
+            function convertDaysToNumbers(dayString) {
+                const dayMap = {
+                    'M': 1,  // Monday
+                    'T': 2,  // Tuesday
+                    'W': 3,  // Wednesday
+                    'R': 4, // Thursday
+                    'F': 5,  // Friday
+                };
+
+                const days = [];
+                for (let i = 0; i < dayString.length; i++) {
+                    // if (dayString[i] === 'T' && dayString[i + 1] === 'r') {
+                    //     days.push(dayMap['Tr']);
+                    //     i++; // Skip the next character since it's part of 'Tr'
+                    days.push(dayMap[dayString[i]]);
+                    
+                }
+
+                return days;
+            }
+        });
+    </script>
+    <script>
+        function enrollCourse(student_id, course_id, title, id) {
+            $.ajax({
+                url: '/enrollClass',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    student_id: student_id,
+                    course_id: course_id,
+                    class_id: id
+                }),
+                success: function (stat,response) {
+                    $(`#course_${course_id}`).remove()
+                    $('#flash-messages').children().remove();
+                    $('#flash-messages').append(`<div class="container alert alert-success" role="alert">Successfully enrolled to Class: ${title}</div>`);
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 1000);
+                },
+                error: function (error) {
+                    $('#flash-messages').children().remove();
+                    $('#flash-messages').append(`<div class="container alert alert-warning" role="alert">${error.responseJSON.response}</div>`);
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+
+    </script>
+    {% endblock %}

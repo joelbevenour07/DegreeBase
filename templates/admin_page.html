@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/admin.css">
+
+    <title>Shared Workspace</title>
+</head>
+<style>
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-family: 'Times New Roman', Times, serif; 
+            font-size: 36px;
+        }
+        .admin {
+            font-style: italic;
+            margin: 5px 0;
+        }
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-radius: 15px; 
+            overflow: hidden; 
+            background-color: #f0f0f0;
+        }
+        .option {
+            cursor: pointer;
+            padding: 10px 20px;
+            border: none;
+            font-size: 18px; 
+            flex-grow: 1; 
+        }
+        .option:hover {
+            background-color: #e0e0e0;
+        }
+
+        .option.active {
+            background-color: #0056b3;
+            color: white;
+            border: 1px solid #0056b3;
+        }
+        .active:hover {
+            background-color: #0056b3;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+        }
+        .content.active {
+            display: block;
+            background-color: #A9A9A9;
+            border: 1px solid #d3d3d3;
+            color: white;
+            
+            
+            
+        }
+        .studentDetails{
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+        }
+        .studentDetails.active {
+            display: block;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .notes{
+            display:none;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .notes.active{
+            display: block;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .top-left-buttons {
+                position: fixed;
+                top: 0;
+                right: 0;
+                margin: 20px; /* Adjust as needed */
+        }
+        .btn-custom {
+                font-size: 16px;
+                padding: 10px 20px;
+                border-radius: 5px;
+                transition: all 0.3s ease;
+            }
+</style>
+<body onload="populate()">
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+            {% if current_user.is_authenticated %}
+                <li class="top-left-buttons">
+                    <a class="btn-custom" aria-current="page" href="{{url_for('logout')}}">Logout</a>
+                    <a class="btn-custom" aria-current="page" href="{{url_for('dashboard')}}">Main</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if title == 'Login' else '' }}" aria-current="page" href="{{url_for('login')}}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if title == 'Register' else '' }}" href="{{url_for('register')}}">Register</a>
+                </li>
+                
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="header">
+        <h1>DegreeWorks</h1>
+        <div class="admin">Admin Page</div>
+        <div class="options">
+            <div id="studentsOption" class="option active" onclick="showStudents('{{ dashboard_url }}')">Students</div>
+            <div id="databaseOption" class="option" onclick="showDatabase('{{ database_url }}')">Database</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Students content -->
+        <div id="studentsContent" class="content active">
+            <label for="studentId">Student ID:</label>
+            <input type="number" id="studentId" placeholder="Enter student ID" min="0">
+            <button onclick="searchStudentById()">Search by ID</button>
+            <br><br>
+            <label for="studentName">Student Name:</label>
+            <select id="studentName"> 
+            </select> 
+            <button onclick="searchStudentByName()">Search by Name</button>
+            <br>
+            <div class="options">
+                <div id="StudentsOption" class="option active" onclick="showStudentDetails()">Students</div>
+                <div id="NotesOption" class="option" onclick="showNotes()">Note</div>
+            </div>
+            
+            <!-- Student details -->
+            <!--   Notes -->
+            <div id="studentDetails" class="studentDetails active">
+                <h3>Student Details</h3>
+                <p><strong>Name:</strong> <span id="studentNameDetail"></span></p>
+                <p><strong>ID:</strong> <span id="studentIdDetail"></span></p>
+                <p><strong>Overall GPA:</strong> <span id="studentGPADetail"></span></p>
+                <p><strong>Credits Taken:</strong> <span id="studentCreditsDetail"></span></p>
+            </div>
+           
+            <div id="Notes" class="notes">
+                <!-- Display previous notes for the selected student -->
+                <div id="viewNotesOption" onclick="viewNotes()">Prev. Notes</div>
+                <div id="previousNotes">
+                    <p><strong>Note:</strong> <span class="note" id="notes_det"></span></p>
+                    <p><strong>Date Created:</strong> <span class="date" id="date_created"></span></p>    
+                </div>
+
+                <!-- Box for viewing the notes from previous for selected student -->
+                <div id="noteSubmissionBox">
+                    <input type="text" id="noteInput" placeholder="Type your note here">
+                    <button onclick="submitNote()">Submit</button>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Database content -->
+        <div id="databaseContent" class="content">
+            <h2>Database</h2>
+            
+           
+            
+        </div>
+    </div>
+
+    <div id="student_list" value='{{student_list}}'>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/he@1.2.0/he.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+         console.log('{{ student_list|safe}}')
+        
+        function showStudents(url) {
+            document.getElementById('studentsContent').classList.add('active');
+            document.getElementById('databaseContent').classList.remove('active');
+            document.getElementById('studentsOption').classList.add('active');
+            document.getElementById('databaseOption').classList.remove('active');
+            window.location.href = url
+        }
+
+        function showDatabase(url) {
+            document.getElementById('studentsContent').classList.remove('active');
+            document.getElementById('databaseContent').classList.remove('active');
+            document.getElementById('studentsOption').classList.remove('active');
+            document.getElementById('databaseOption').classList.remove('active');
+            window.location.href = url;
+        }
+
+        
+        function searchStudentById() {
+            //console.log("hello");
+            var student_data = '{{ student_list|safe }}';
+            var json_student = JSON.parse(student_data)
+            //var student_json_data = JSON.parse('{{ student_data|default("")|tojson }}');
+           // var student_data = JSON.stringify(json_student_data)
+            var studentId = document.getElementById('studentId').value;
+            //console.log(json_student[1])
+                // Update student details with fetched data
+            
+            
+             for(let i = 0; i < json_student.length; i++){
+
+                 if (parseInt(json_student[i].id)==parseInt(studentId)){
+                  document.getElementById('studentNameDetail').textContent = json_student[i].firstname + " " + json_student[i].lastname;
+                  document.getElementById('studentIdDetail').textContent = json_student[i].id;
+                  document.getElementById('studentGPADetail').textContent = json_student[i].GPA;
+                  document.getElementById('studentCreditsDetail').textContent = json_student[i].credits_completed;
+                 } 
+            
+         }
+
+        }
+
+        function populate(){
+                        // get an array of all elements 
+            var student_data = '{{ student_list|safe }}';
+            var json_student = JSON.parse(student_data)
+            let select = document.getElementById("studentName");
+            var elmts = []; 
+            var i = 0; 
+            
+            for(i in json_student) { 
+                if(!isNaN(i)) { 
+                    // to get "value": first,second,third 
+                    //myArray.push(elements[i].getAttribute("value")); 
+            
+                    // to get "text": First Option,Second Option etc..  
+                    elmts.push(json_student[i].firstname + " " + json_student[i].lastname); 
+
+                } 
+                i+=1; 
+            } 
+            
+            // Main function
+                for (let i = 0; i < elmts.length; i++) {
+                    let optn = elmts[i];
+                    let el = document.createElement("option");
+                    el.textContent = optn;
+                    el.value = optn;
+                    select.appendChild(el);
+                }
+        }
+    
+
+        function searchStudentByName() {
+            var student_data = '{{ student_list|safe }}';
+            
+            var json_student = JSON.parse(student_data);
+            
+            var studentName = document.getElementById('studentName').value;
+  
+            console.log(studentName);
+            
+            for(let i = 0; i < json_student.length; i++){
+                if (json_student[i].firstname + " " + json_student[i].lastname==studentName){
+                    console.log(json_student[i].firstname + " " + json_student[i].lastname);
+                    console.log(studentName);
+                    document.getElementById('studentNameDetail').textContent = json_student[i].firstname + " " + json_student[i].lastname;
+                    document.getElementById('studentIdDetail').textContent = json_student[i].id;
+                    document.getElementById('studentGPADetail').textContent = json_student[i].GPA;
+                    document.getElementById('studentCreditsDetail').textContent = json_student[i].credits_completed;
+                } 
+            }
+            // }
+            // fetch(`/student/${studentName}`) // Route to fetch student details based on name
+            // .then(response => response.json())
+            // .then(data => {
+            //     // Update student details with fetched data
+            //     document.getElementById('studentNameDetail').textContent = data.name;
+            //     document.getElementById('studentIdDetail').textContent = data.id;
+            //     document.getElementById('studentGPADetail').textContent = data.gpa;
+            //     document.getElementById('studentCreditsDetail').textContent = data.credits;
+            // })
+            // .catch(error => {
+            //     console.error('Error fetching student details:', error);
+            // });
+        }
+
+        
+        function showStudentDetails(){
+            document.getElementById('studentDetails').classList.add('active');
+            document.getElementById('Notes').classList.remove('active');
+            document.getElementById('StudentsOption').classList.add('active');
+            document.getElementById('NotesOption').classList.remove('active');
+        
+        }
+
+        function showNotes() {
+            
+            var student_id = 2;
+            var student_data = '{{ student_list|safe }}';
+            var json_student = JSON.parse(student_data);
+            var studentName = document.getElementById('studentName').value;
+
+            for (var i = 0; i < json_student.length; i++) {
+                var fullName = json_student[i].firstname + ' ' + json_student[i].lastname;
+                if (fullName === studentName) {
+                    student_id = json_student[i].id;
+                    break; // Exit the loop once a match is found
+                }
+            }
+            var note_list_encoded = '{{ note_list }}'; // Your HTML-encoded JSON string
+            var note_list_decoded = he.decode(note_list_encoded); // Decode HTML entities
+            console.log(note_list_decoded);// Parse JSON string to JavaScript object
+            note_list_decoded = JSON.parse(note_list_decoded);
+            console.log(note_list_decoded[2]);
+            console.log(note_list_decoded[2].id);
+            console.log(note_list_decoded[2].Note);
+            document.getElementById('notes_det').innerHTML = '';
+            document.getElementById('date_created').innerHTML = '';
+            for (let i = 0; i < note_list_decoded.length; i++) {
+                
+                if(note_list_decoded[i].id=== student_id){
+                    let noteElement = document.createElement('p');
+                    noteElement.textContent = 'Note: ' + note_list_decoded[i].Note;
+                    document.getElementById('notes_det').appendChild(noteElement);
+
+                    let dateElement = document.createElement('p');
+                    dateElement.textContent = 'Date Created: ' + note_list_decoded[i].Date_created;
+                    document.getElementById('date_created').appendChild(dateElement);
+                }
+                
+            }
+            document.getElementById('studentDetails').classList.remove('active');
+            document.getElementById('Notes').classList.add('active');
+            document.getElementById('StudentsOption').classList.remove('active');
+            document.getElementById('NotesOption').classList.add('active');
+        }
+
+        function submitNote() {
+            var noteText = document.getElementById('noteInput').value;
+            var student_id = 1; // Default student ID, in case no match is found
+            var studentName = document.getElementById('studentName').value;
+            var student_data = '{{ student_list|safe }}';
+            var json_student = JSON.parse(student_data);
+
+            // Find the student ID based on the student name
+            for (var i = 0; i < json_student.length; i++) {
+                var fullName = json_student[i].firstname + ' ' + json_student[i].lastname;
+                if (fullName === studentName) {
+                    student_id = json_student[i].id;
+                    break; // Exit the loop once a match is found
+                }
+            }
+
+            // Make an AJAX request to add the note
+            $.ajax({
+                url: '/add_note',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    student_id: student_id, 
+                    noteText: noteText,
+                }),
+                success: function (response) {
+                    console.log('Note added successfully:', response);
+                    alert("Note added Successfully")
+                },
+                error: function (error) {
+                    console.error('Error adding note:', error);
+                    // Display an error message to the user
+                    alert('Error adding note. Please try again later.');
+                }
+            });
+        }
+
+       
+
+    </script>
+</body>
+</html>

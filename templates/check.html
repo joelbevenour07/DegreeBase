@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../static/css/check.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    </head>
+    <style>
+            .header {
+                text-align: center;
+                padding: 20px 0;
+            }
+            .header h1 {
+                margin: 0;
+                font-family: 'Times New Roman', Times, serif; /* Fancy font */
+                font-size: 36px;
+            }
+            .admin {
+                font-style: italic;
+                margin: 5px 0;
+            }
+            .content {
+                display: none;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                width: 80%;
+            }
+            .content.active {
+                display: block;   
+            }
+            .option {
+                cursor: pointer;
+                padding: 10px 20px;
+                border: none;
+                font-size: 18px; /* Bigger font size */
+                flex-grow: 1; /* Equal width */
+            }
+            .option:hover {
+                background-color: #e0e0e0;
+            }
+
+            .option.active {
+                background-color: #0056b3;
+                color: white;
+                border: 1px solid #0056b3;
+            }
+            .options {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                border-radius: 15px; /* Bigger border radius */
+                overflow: hidden; /* Ensure border radius applies */
+                background-color: #f0f0f0;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f2f2f2;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            tr:hover {
+                background-color: #ddd;
+            }
+            /* Custom button styles */
+            .btn-custom {
+                font-size: 16px;
+                padding: 10px 20px;
+                border-radius: 5px;
+                transition: all 0.3s ease;
+            }
+            /* Custom button styles */
+
+
+
+            /* Primary button */
+            .btn-primary-custom {
+                color: #fff;
+                background-color: #007bff;
+                border-color: #007bff;
+            }
+
+
+            /* Danger button */
+            .btn-danger-custom {
+                color: #fff;
+                background-color: #dc3545;
+                border-color: #dc3545;
+            }
+
+
+            .top-left-buttons {
+                position: fixed;
+                top: 0;
+                right: 0;
+                margin: 20px; /* Adjust as needed */
+            }
+ 
+
+
+            
+
+    </style>
+   
+    <body>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                {% if current_user.is_authenticated %}
+                <div class="top-left-buttons">
+                    <a class="btn-custom" aria-current="page" href="{{url_for('logout')}}">Logout</a>
+                    <a class="btn-custom" aria-current="page" href="{{url_for('dashboard')}}">Main</a>
+                </div>
+                
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if title == 'Login' else '' }}" aria-current="page" href="{{url_for('login')}}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if title == 'Register' else '' }}" href="{{url_for('register')}}">Register</a>
+                    </li>
+                    
+                {% endif %}
+            </ul>
+        </div>
+    
+        <div class="header">
+            <h1>DegreeWorks</h1>
+            <div class="admin">Admin Page</div>
+            <div class="options">
+                <div id="studentsOption" class="option" onclick="showStudents('{{ dashboard_url }}')">Students</div>
+                <div id="databaseOption" class="option active" onclick="showDatabase('{{ database_url }}')">Database</div>
+            </div>
+        </div>
+    
+        <h1>User Table</h1>
+        <table id="userTable" class="display">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Credits Needed</th>
+                    <th>Credits Completed</th>
+                    <th>GPA</th>
+                    <th>Year</th>
+                    <th>Graduation Year</th>
+                    <th>Email</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.lastname }}</td>
+                    <td>{{ user.credits_needed }}</td>
+                    <td>{{ user.credits_completed }}</td>
+                    <td>{{ user.GPA }}</td>
+                    <td>{{ user.year }}</td>
+                    <td>{{ user.grad_year }}</td>
+                    <td>{{ user.email }}</td>
+                    <!-- Add more columns as needed -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h1>Course Table</h1>
+        <table id="courseTable" class="display">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Course Name</th>
+                    <th>Full Title</th>
+                    <th>Subject</th>
+                    <th>Course Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.id }}</td>
+                    <td>{{ course.coursename }}</td>
+                    <td>{{ course.full_title }}</td>
+                    <td>{{ course.subject }}</td>
+                    <td>{{ course.courseNum }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h1>Major-Course Relationships</h1>
+        <table id="courseTable" class="display">
+            <thead>
+                <tr>
+                    <th>Major ID</th>
+                    <th>Course ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for relationship in major_course_relationships %}
+                <tr>
+                    <td>{{ relationship.major_id }}</td>
+                    <td>{{ relationship.course_id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h1>Class Table</h1>
+        <hr>
+        <div class="my-3">
+            <a class="btn-custom btn-primary-custom" href="{{ url_for('class_form') }}">Add Class</a>
+            <a class="btn-custom btn-danger-custom" href="{{ url_for('class_delete') }}">Delete Class</a>
+        </div>
+        <hr><hr>        
+        <table id="classTable" class="display">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>CRN</th>
+                    <th>Subject</th>
+                    <th>Course Number</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for class in classes %}
+                <tr>
+                    <td>{{ class.id }}</td>
+                    <td>{{ class.CRN }}</td>
+                    <td>{{ class.subject }}</td>
+                    <td>{{ class.courseNum }}</td>
+                    <!-- Add more columns as needed -->
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+        <h1>Major Table</h1>
+        <table id="classTable" class="display">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Major Name</th>
+                    <th>Major Description</th>
+                    <th>Major Department</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for major in majors %}
+                <tr>
+                    <td>{{ major.id }}</td>
+                    <td>{{ major.major_name }}</td>
+                    <td>{{ major.major_desc }}</td>
+                    <td>{{ major.major_dept }}</td>
+                    <!-- Add more columns as needed -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h1>Enrollments Table</h1>
+        <table id="classTable" class="display">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Course ID</th>
+                    <th>Is Complete</th>
+                    <th>Is Required</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in enrollments %}
+                <tr>
+                    <td>{{ enrollment.student_id }}</td>
+                    <td>{{ enrollment.course_id }}</td>
+                    <td>{{ enrollment.is_complete }}</td>
+                    <td>{{ enrollment.is_required }}</td>
+                    <td>{{ enrollment.grade }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+        <script>
+            function showStudents(url) {
+                document.getElementById('studentsContent').classList.add('active');
+                document.getElementById('databaseContent').classList.remove('active');
+                document.getElementById('studentsOption').classList.add('active');
+                document.getElementById('databaseOption').classList.remove('active');
+                window.location.href = url
+        }
+
+            function showDatabase(url) {
+                document.getElementById('studentsContent').classList.remove('active');
+                document.getElementById('databaseContent').classList.remove('active');
+                document.getElementById('studentsOption').classList.remove('active');
+                document.getElementById('databaseOption').classList.remove('active');
+                window.location.href = url;
+            }
+            $(document).ready( function () {
+                // Initialize DataTables for all tables
+                $('.display').DataTable({
+                    "paging": true, // Enable pagination
+                    "ordering": true, // Enable column sorting
+                    "searching": true // Enable search
+                });
+            });
+        </script>
+    </body>
+    </html>

@@ -1,0 +1,70 @@
+{% extends 'primaryLayout.html' %} {% block title %}Register{% endblock %} {% block
+content %}
+<div class="container-fluid flex-grow-1 align-items-center justify-content-center d-flex">
+    <div class="card login-container ">
+        <form action="{{ url_for('register') }}" method="post" class="card-body">
+            {{ form.csrf_token }}
+            <h4 class="card-title">
+                Register
+            </h4>
+            <hr>
+            <div class="mb-3">
+                {{ form.firstname.label }} {{ form.firstname(class="form-control") }}
+                {% if form.firstname.errors %}
+                <div class="alert alert-danger">{{ form.firstname.errors[0] }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.lastname.label }} {{ form.lastname(class="form-control") }}
+                {% if form.lastname.errors %}
+                <div class="alert alert-danger">{{ form.lastname.errors[0] }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label }} {{ form.email(class="form-control") }}
+                {% if form.email.errors %}
+                    <div class="alert alert-danger">{{ form.email.errors[0] }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label }} {{ form.password(class="form-control") }}
+                {% if form.password.errors %}
+                    <div class="alert alert-danger">{{ form.password.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                {{form.major_id.label}}
+                <span class="error">{{ form.major_id.errors | join("|") }}</span>
+            </div>
+            <div class="mb-3">
+                {{form.major_id}}
+            </div>
+
+            <div>
+                {{form.level_id.label}}
+                <span class="error">{{ form.level_id.errors | join("|") }}</span>
+            </div>
+            <div class="mb-3">
+                {{form.level_id}}
+            </div>
+
+            <div >
+            {{form.current_credits.label}}
+            <span class="error">{{ form.current_credits.errors | join("|") }}</span>
+            <div class="mb-3">
+            {{form.current_credits}}
+            </div>
+            </div>
+     
+
+            <div class="mb-3">
+                <i>Already have an account? <a href="{{url_for('login')}}">Login</a></i>
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+
+        </form>
+        
+    </div>
+</div>      
+{% endblock %}

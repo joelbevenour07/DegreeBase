@@ -1,0 +1,26 @@
+{% extends "primaryLayout.html" %}
+
+{% block title %} {{title}}  {% endblock title %}
+{% block header %} {{header}}  {% endblock header %}
+
+{% block content %} 
+<form action="" method="post">
+   {{ form.csrf_token }}
+
+   <div>
+      {{form.class_id.label}}
+      <span class="error">{{ form.class_id.errors | join("|") }}</span>
+   </div>
+   <div>
+      {{form.class_id}}
+   </div>
+ 
+   <div>
+    {{deleted}}
+   </div>
+   <!-- SUBMIT -->
+   <div>
+      {{form.submit()}}
+   </div>
+</form>
+{% endblock content %}
